@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const photoSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  author: { type: String, required: true },
+  title: { type: String, required: true, maxLength: 20 },
+  author: { type: String, required: true, maxLength: 50 },
   email: { type: String, required: true },
   src: { type: String, required: true },
   votes: { type: Number, required: true },

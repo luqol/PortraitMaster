@@ -1,4 +1,5 @@
 const Photo = require('../models/photo.model');
+const checkHtml = require('../utilis/checkHtml');
 
 /****** SUBMIT PHOTO ********/
 
@@ -8,7 +9,8 @@ exports.add = async (req, res) => {
     const { title, author, email } = req.fields;
     const file = req.files.file;
 
-    if(title && author && email && file) { // if fields are not empty...
+
+    if(title && author && email && file && checkHtml(title) && checkHtml(author) && checkHtml(email)) { // if fields are not empty...
 
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
 
