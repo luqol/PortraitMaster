@@ -1,5 +1,6 @@
 const Photo = require('../models/photo.model');
 const checkHtml = require('../utilis/checkHtml');
+const Voter = require('../models/Voter.model');
 
 /****** SUBMIT PHOTO ********/
 
@@ -52,6 +53,23 @@ exports.loadAll = async (req, res) => {
 exports.vote = async (req, res) => {
 
   try {
+
+    const voteClient = await Voter.findOne( { user: req.clientIp});
+    if (!voteClient){
+      const addClient = await Voter.create({ user: req.clientIp, votes: [req.params.id]});
+      addClient.save();
+    } else {
+      const index = voteClient.votes.indexOf(req.params.id);
+       
+      if (index === -1){
+          //console.log('dodajemy do tablicy');
+          voteClient.votes.push(req.params.id);
+          await voteClient.save();
+      } else {
+        throw new Error('You already voted on this photo!');
+      }
+    }
+    
     const photoToUpdate = await Photo.findOne({ _id: req.params.id });
     if(!photoToUpdate) res.status(404).json({ message: 'Not found' });
     else {
@@ -60,7 +78,7 @@ exports.vote = async (req, res) => {
       res.send({ message: 'OK' });
     }
   } catch(err) {
-    res.status(500).json(err);
+    res.status(500).json(err.message);
   }
 
 };
